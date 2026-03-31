@@ -17,7 +17,7 @@ const tierMap = {
 
 const gamemodes = [
   "overall",
-  "sword","axe","uhc","pot","nethop","legacyop","mace","smp","diamondsmp","crystal","ogvanilla",
+  "sword","axe","uhc","pot","nethop","legacyop","mace","smp","diamondsmp","crystal","ogvanilla","bow",
 ];
 
 function formatName(name) {
@@ -37,6 +37,22 @@ const icons = {
   diamondsmp: "https://www.subtiers.net/assets/dia_smp-523efa38.svg",
   crystal: "https://mctiers.com/tier_icons/vanilla.svg",
   ogvanilla: "https://www.subtiers.net/assets/og_vanilla-bd47093f.svg",
+  bow: "https://www.subtiers.net/assets/bow-0b52585f.svg",
+};
+
+const kitImages = {
+  sword: "https://trtier.com/images/sword-detail.jpg",
+  axe: "https://trtier.com/images/axe-detail.jpg",
+  uhc: "https://trtier.com/images/uhc-detail.jpg",
+  pot: "https://trtier.com/images/pot-detail.jpg",
+  nethop: "https://trtier.com/images/nethpot-detail.jpg",
+  legacyop: "https://i.imgur.com/BYtRnzU.png",
+  mace: "https://trtier.com/images/mace-detail.jpg",
+  smp: "https://trtier.com/images/smp-detail.jpg",
+  diamondsmp: "https://trtier.com/images/diasmp-detail.jpg",
+  crystal: "https://trtier.com/images/crystal-detail.jpg",
+  ogvanilla: "https://trtier.com/images/ogv-detail.jpg",
+  bow: "https://i.imgur.com/Fp0ycv3.png",
 };
 
 const tierColumns = [1,2,3,4,5];
@@ -67,6 +83,7 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
   const [tab, setTab] = useState("overall");
+  const [showKit, setShowKit] = useState(false);
 
   useEffect(() => {
     fetchPlayers();
@@ -136,6 +153,17 @@ export default function App() {
         ))}
       </div>
 
+      {tab !== "overall" && (
+        <div className="flex justify-center mb-4">
+          <button
+            onClick={() => setShowKit(true)}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded"
+          >
+            Kit Details
+          </button>
+        </div>
+      )}
+
       <input
         placeholder="Search player..."
         className="w-full p-3 mb-6 rounded-xl bg-gray-800 border-2 border-gray-600 focus:border-blue-500 outline-none"
@@ -163,8 +191,8 @@ export default function App() {
                 </div>
 
                 <div className="grid grid-cols-2 md:flex gap-3 items-center text-xs">
-                  {gamemodes.slice(1).filter((mode) => getTier(player[mode]) !== "Unranked").map((mode, i) => (
-                    <div key={mode} className={`flex flex-col items-center ${i === gamemodes.slice(1).length - 1 ? "col-span-2 md:col-span-1" : ""}`}>
+                  {gamemodes.slice(1).filter((mode) => getTier(player[mode]) !== "Unranked").map((mode) => (
+                    <div key={mode} className="flex flex-col items-center">
                       <div className={`w-10 h-10 flex flex-col items-center justify-center rounded-xl border text-[9px] leading-tight ${getTierColor(getTier(player[mode]))}`}>
                         <img src={icons[mode]} className="w-4 h-4 mb-[2px]" />
                         <span>{getTier(player[mode])}</span>
@@ -201,8 +229,8 @@ export default function App() {
       )}
 
       {selected && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-          <div className="bg-gray-800 p-6 rounded w-[420px] max-h-[90vh] overflow-y-auto relative">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4">
+          <div className="bg-gray-800 p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto relative">
             <button
               className="absolute top-2 right-2 text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer"
               onClick={() => setSelected(null)}
@@ -213,7 +241,7 @@ export default function App() {
             <div className="flex items-center justify-center gap-4 mb-4">
               <img
                 src={`https://render.crafty.gg/3d/full/${selected.name}`}
-                className="w-24"
+                className="w-20 max-w-full object-contain"
               />
               <div>
                 <h2 className="text-xl">{selected.name}</h2>
@@ -224,8 +252,8 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {gamemodes.slice(1).map((mode, i) => (
-                <div key={mode} className={`flex items-center gap-2 ${i === gamemodes.slice(1).length - 1 ? "col-span-2" : ""}`}>
+              {gamemodes.slice(1).map((mode) => (
+                <div key={mode} className="flex items-center gap-2">
                   <div className={`w-12 h-12 flex flex-col items-center justify-center rounded-xl border text-[10px] ${getTierColor(getTier(selected[mode]))}`}>
                     <img src={icons[mode]} className="w-4 h-4 mb-[2px]" />
                     <span>{getTier(selected[mode])}</span>
@@ -234,8 +262,24 @@ export default function App() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
 
-            
+      {showKit && tab !== "overall" && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4">
+          <div className="bg-gray-800 p-4 rounded max-w-3xl w-full relative">
+            <button
+              className="absolute top-2 right-2 text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-700"
+              onClick={() => setShowKit(false)}
+            >
+              ×
+            </button>
+            <h2 className="text-lg mb-3 text-center">{formatName(tab)} Kit</h2>
+            <img
+              src={kitImages[tab]}
+              className="w-full rounded"
+            />
           </div>
         </div>
       )}
