@@ -17,7 +17,7 @@ const tierMap = {
 
 const gamemodes = [
   "overall",
-  "sword","axe","uhc","pot","nethop","legacyop","mace","smp","diamondsmp","crystal","ogvanilla","bow",
+  "sword","axe","uhc","pot","nethop","legacyop","mace","smp","diamondsmp","crystal","ogvanilla","bow","spear","legacy",
 ];
 
 function formatName(name) {
@@ -38,6 +38,8 @@ const icons = {
   crystal: "https://mctiers.com/tier_icons/vanilla.svg",
   ogvanilla: "https://www.subtiers.net/assets/og_vanilla-bd47093f.svg",
   bow: "https://www.subtiers.net/assets/bow-0b52585f.svg",
+  spear: "https://i.imgur.com/XSUyJ37.png",
+  legacy: "https://i.imgur.com/xUeS3FM.png",
 };
 
 const kitImages = {
@@ -53,6 +55,8 @@ const kitImages = {
   crystal: "https://trtier.com/images/crystal-detail.jpg",
   ogvanilla: "https://trtier.com/images/ogv-detail.jpg",
   bow: "https://i.imgur.com/Fp0ycv3.png",
+  spear: "https://i.imgur.com/XkDuVHr.png",
+  legacy: "https://i.imgur.com/tDqsCJo.png",
 };
 
 const tierColumns = [1,2,3,4,5];
@@ -177,31 +181,36 @@ export default function App() {
         <div className="space-y-2">
           {filtered
             .sort((a, b) => b.overall - a.overall)
-            .map((player, index) => (
-              <div
-                key={player.name}
-                className={`p-3 rounded flex justify-between cursor-pointer hover:bg-gray-700 ${index===0?"bg-yellow-600/30":index===1?"bg-gray-400/30":index===2?"bg-amber-700/30":"bg-gray-800"}`}
-                onClick={() => setSelected(player)}
-              >
-                <div className="flex items-center gap-4">
-                  <span>#{index + 1}</span>
-                  <img src={`https://render.crafty.gg/3d/bust/${player.name}`} className="w-12" />
-                  <span>{player.name}</span>
-                  <span>{player.overall}</span>
-                </div>
+            .map((player) => {
+              const rank = getRank(player);
+              return (
+                <div
+                  key={player.name}
+                  className={`p-3 rounded flex justify-between cursor-pointer hover:bg-gray-700 ${rank===1?"bg-yellow-600/30":rank===2?"bg-gray-400/30":rank===3?"bg-amber-700/30":"bg-gray-800"}`}
+                  onClick={() => setSelected(player)}
+                >
+                  <div className="flex items-center gap-4">
+                    <span>#{rank}</span>
+                    <img src={`https://render.crafty.gg/3d/bust/${player.name}`} className="w-12" />
+                    <span>{player.name}</span>
+                    <span>{player.overall}</span>
+                  </div>
 
-                <div className="grid grid-cols-2 md:flex gap-3 items-center text-xs">
-                  {gamemodes.slice(1).filter((mode) => getTier(player[mode]) !== "Unranked").map((mode) => (
-                    <div key={mode} className="flex flex-col items-center">
-                      <div className={`w-10 h-10 flex flex-col items-center justify-center rounded-xl border text-[9px] leading-tight ${getTierColor(getTier(player[mode]))}`}>
-                        <img src={icons[mode]} className="w-4 h-4 mb-[2px]" />
-                        <span>{getTier(player[mode])}</span>
-                      </div>
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-2 md:flex gap-3 items-center text-xs">
+                    {gamemodes.slice(1)
+                      .filter((mode) => getTier(player[mode]) !== "Unranked")
+                      .map((mode) => (
+                        <div key={mode} className="flex flex-col items-center">
+                          <div className={`w-10 h-10 flex flex-col items-center justify-center rounded-xl border text-[9px] leading-tight ${getTierColor(getTier(player[mode]))}`}>
+                            <img src={icons[mode]} className="w-4 h-4 mb-[2px]" />
+                            <span>{getTier(player[mode])}</span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
       )}
 
@@ -245,8 +254,7 @@ export default function App() {
               />
               <div>
                 <h2 className="text-xl">{selected.name}</h2>
-                <div className="text-sm text-gray-300">Rank: #{getRank(selected)}
-                </div>
+                <div className="text-sm text-gray-300">Rank: #{getRank(selected)}</div>
                 <div className="text-sm text-gray-300">Overall: {selected.overall}</div>
               </div>
             </div>
@@ -275,11 +283,10 @@ export default function App() {
             >
               ×
             </button>
-            <h2 className="text-lg mb-3 text-center">{formatName(tab)} Kit</h2>
-            <img
-              src={kitImages[tab]}
-              className="w-full rounded"
-            />
+            <h2 className="text-lg mb-3 text-center">
+              {formatName(tab)} Kit {tab === "legacy" && "(1.8)"}
+            </h2>
+            <img src={kitImages[tab]} className="w-full rounded" />
           </div>
         </div>
       )}
