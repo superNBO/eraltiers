@@ -88,9 +88,11 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [tab, setTab] = useState("overall");
   const [showKit, setShowKit] = useState(false);
+  const [fights, setFights] = useState([]);
 
   useEffect(() => {
     fetchPlayers();
+    fetchFights();
   }, []);
 
   async function fetchPlayers() {
@@ -105,6 +107,16 @@ export default function App() {
     });
 
     setPlayers(withTotals);
+  }
+
+  async function fetchFights() {
+    const { data } = await supabase
+      .from("fight")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
+
+    setFights(data || []);
   }
 
   const filtered = players.filter((p) =>
@@ -236,6 +248,27 @@ export default function App() {
           ))}
         </div>
       )}
+
+      {/* Recent Fights */}
+      <div className="mt-10">
+        <h2 className="text-xl mb-4 text-center">Recent Fights</h2>
+        <div className="space-y-2 max-w-2xl mx-auto">
+          {fights.map((f, i) => (
+            <div key={i} className="bg-gray-800 p-3 rounded flex justify-between text-sm">
+              <div className="flex gap-2">
+                <span className="text-blue-400">{f.player1}</span>
+                <span>vs</span>
+                <span className="text-red-400">{f.player2}</span>
+              </div>
+              <div className="flex gap-4">
+                <span>{f.score}</span>
+                <span className="text-green-400">{f.winner}</span>
+                <span className="text-gray-400">{formatName(f.gamemode)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {selected && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4">
