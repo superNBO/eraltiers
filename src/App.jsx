@@ -1,4 +1,91 @@
 import { useEffect, useState } from "react";
+
+function InformationModal() {
+  const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState("titles");
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-xl text-white transform transition-all duration-200 ease-in-out hover:scale-105">Information</button>
+      {open && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 transition-all duration-200 ease-in-out">
+          <div className="bg-[#0f172a] w-[420px] max-h-[80vh] rounded-2xl p-4 overflow-hidden relative transform transition-all duration-200 ease-in-out scale-100">
+            <button onClick={() => setOpen(false)} className="absolute top-3 right-4 text-white text-xl">✕</button>
+            <div className="flex bg-gray-800 rounded-xl mb-4 overflow-hidden">
+              <button onClick={() => setTab("titles")} className={`flex-1 py-2 ${tab === "titles" ? "bg-gray-700" : ""}`}>Titles</button>
+              <button onClick={() => setTab("points")} className={`flex-1 py-2 ${tab === "points" ? "bg-gray-700" : ""}`}>Points</button>
+            </div>
+            <div className="overflow-y-auto max-h-[65vh] pr-2 text-white">
+              {tab === "titles" && (
+                <div>
+                  <h2 className="text-lg mb-3">How to obtain Achievement Titles</h2>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <img src="https://mctiers.com/titles/combat_grandmaster.webp" className="w-6" />
+                      <div><div className="text-yellow-400">Combat Grandmaster</div><div className="text-sm text-gray-400">Obtained 300+ total points.</div></div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <img src="https://mctiers.com/titles/combat_master.webp" className="w-6" />
+                      <div><div className="text-yellow-300">Combat Master</div><div className="text-sm text-gray-400">Obtained 200+ total points.</div></div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <img src="https://mctiers.com/titles/combat_ace.svg" className="w-6" />
+                      <div><div className="text-pink-400">Combat Ace</div><div className="text-sm text-gray-400">Obtained 100+ total points.</div></div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <img src="https://mctiers.com/titles/combat_specialist.svg" className="w-6" />
+                      <div><div className="text-purple-400">Combat Specialist</div><div className="text-sm text-gray-400">Obtained 50+ total points.</div></div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <img src="https://mctiers.com/titles/combat_cadet.svg" className="w-6" />
+                      <div><div className="text-[rgb(196,181,253)]">Combat Pro</div><div className="text-sm text-gray-400">Obtained 25+ total points.</div></div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <img src="https://mctiers.com/titles/combat_novice.svg" className="w-6" />
+                      <div><div className="text-gray-300">Combat Novice</div><div className="text-sm text-gray-400">Obtained 10+ total points.</div></div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <img src="https://mctiers.com/titles/rookie.svg" className="w-6" />
+                      <div><div className="text-gray-400">Rookie</div><div className="text-sm text-gray-400">Starting rank for players with less than 10 points.</div></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {tab === "points" && (
+                <div>
+                  <h2 className="text-lg mb-3">How ranking points are calculated</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex items-center gap-2 text-yellow-400"><img src="https://mctiers.com/icons/tier_1.svg" className="w-5" /> Tier 1</div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-yellow-600/30 px-2 py-1 rounded">↑ 60 Points</span><span className="bg-yellow-600/30 px-2 py-1 rounded">↓ 45 Points</span></div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 text-gray-300"><img src="https://mctiers.com/icons/tier_2.svg" className="w-5" /> Tier 2</div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-600/30 px-2 py-1 rounded">↑ 30 Points</span><span className="bg-gray-600/30 px-2 py-1 rounded">↓ 20 Points</span></div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 text-orange-400"><img src="https://mctiers.com/icons/tier_3.svg" className="w-5" /> Tier 3</div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-orange-600/30 px-2 py-1 rounded">↑ 10 Points</span><span className="bg-orange-600/30 px-2 py-1 rounded">↓ 6 Points</span></div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Tier 4</div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↑ 4 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 3 Points</span></div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Tier 5</div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↑ 2 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 1 Point</span></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = "https://wlkgxearhywnsdevwdvo.supabase.co";
@@ -82,6 +169,16 @@ function getTierColor(tier) {
   return "bg-gray-700 border-gray-600";
 }
 
+function getTitle(points) {
+  if (points >= 300) return "Combat Grandmaster";
+  if (points >= 200) return "Combat Master";
+  if (points >= 100) return "Combat Ace";
+  if (points >= 50) return "Combat Specialist";
+  if (points >= 25) return "Combat Pro";
+  if (points >= 10) return "Combat Novice";
+  return "Rookie";
+}
+
 export default function App() {
   const [players, setPlayers] = useState([]);
   const [search, setSearch] = useState("");
@@ -89,6 +186,7 @@ export default function App() {
   const [tab, setTab] = useState("overall");
   const [showKit, setShowKit] = useState(false);
   const [fights, setFights] = useState([]);
+  const [stats, setStats] = useState({});
 
   useEffect(() => {
     fetchPlayers();
@@ -99,10 +197,13 @@ export default function App() {
     const { data } = await supabase.from("players").select("*");
 
     const withTotals = (data || []).map((p) => {
-      const total = Object.keys(p).reduce((sum, key) => {
-        if (key !== "name") return sum + (p[key] || 0);
-        return sum;
-      }, 0);
+      // Only count gamemode points, not every column
+      const total = gamemodes
+        .filter((g) => g !== "overall")
+        .reduce((sum, mode) => {
+          return sum + (Number(p[mode]) || 0);
+        }, 0);
+
       return { ...p, overall: total };
     });
 
@@ -113,10 +214,39 @@ export default function App() {
     const { data } = await supabase
       .from("fight")
       .select("*")
-      .order("created_at", { ascending: false })
-      .limit(10);
+      .order("created_at", { ascending: false });
 
-    setFights(data || []);
+    const fightsData = data || [];
+
+    // keep only last 10 for UI display
+    setFights(fightsData.slice(0, 10));
+
+    // calculate accurate winrate stats from ALL fights
+    const statsMap = {};
+
+    fightsData.forEach((f) => {
+      const { player1, player2, winner } = f;
+
+      if (!statsMap[player1]) statsMap[player1] = { wins: 0, losses: 0 };
+      if (!statsMap[player2]) statsMap[player2] = { wins: 0, losses: 0 };
+
+      if (winner === player1) {
+        statsMap[player1].wins++;
+        statsMap[player2].losses++;
+      } else if (winner === player2) {
+        statsMap[player2].wins++;
+        statsMap[player1].losses++;
+      }
+    });
+
+    // convert to winrate
+    Object.keys(statsMap).forEach((p) => {
+      const { wins, losses } = statsMap[p];
+      const total = wins + losses;
+      statsMap[p].winrate = total > 0 ? Math.round((wins / total) * 100) : 0;
+    });
+
+    setStats(statsMap);
   }
 
   const filtered = players.filter((p) =>
@@ -161,7 +291,7 @@ export default function App() {
           <button
             key={g}
             onClick={() => setTab(g)}
-            className={`px-3 py-1 rounded flex items-center gap-2 ${tab === g ? "bg-blue-500" : "bg-gray-700"}`}
+            className={`px-3 py-1 rounded flex items-center gap-2 transform transition-all duration-200 ease-in-out hover:scale-105 ${tab === g ? "bg-blue-500" : "bg-gray-700"}`}
           >
             {icons[g] && <img src={icons[g]} className="w-4 h-4" />}
             {formatName(g)}
@@ -173,21 +303,24 @@ export default function App() {
         <div className="flex justify-center mb-4">
           <button
             onClick={() => setShowKit(true)}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded"
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded transform transition-all duration-200 ease-in-out hover:scale-105"
           >
             Kit Details
           </button>
         </div>
       )}
 
-      <input
-        placeholder="Search player..."
-        className="w-full p-3 mb-6 rounded-xl bg-gray-800 border-2 border-gray-600 focus:border-blue-500 outline-none"
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setTab("overall");
-        }}
-      />
+      <div className="flex gap-2 mb-6">
+        <input
+          placeholder="Search player..."
+          className="w-full p-3 rounded-xl bg-gray-800 border-2 border-gray-600 focus:border-blue-500 outline-none transition-all duration-200 ease-in-out"
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setTab("overall");
+          }}
+        />
+        <InformationModal />
+      </div>
 
       {tab === "overall" && (
         <div className="space-y-2">
@@ -198,14 +331,19 @@ export default function App() {
               return (
                 <div
                   key={player.name}
-                  className={`p-3 rounded flex justify-between cursor-pointer hover:bg-gray-700 ${rank===1?"bg-yellow-600/30":rank===2?"bg-gray-400/30":rank===3?"bg-amber-700/30":"bg-gray-800"}`}
+                  className={`p-3 rounded flex justify-between cursor-pointer hover:bg-gray-700 transform transition-all duration-200 ease-in-out hover:scale-[1.02] ${rank===1?"bg-yellow-600/30":rank===2?"bg-gray-400/30":rank===3?"bg-amber-700/30":"bg-gray-800"}`}
                   onClick={() => setSelected(player)}
                 >
                   <div className="flex items-center gap-4">
                     <span>#{rank}</span>
                     <img src={`https://render.crafty.gg/3d/bust/${player.name}`} className="w-12" />
-                    <span>{player.name}</span>
-                    <span>{player.overall}</span>
+                    <div className="flex flex-col">
+                      <span>{player.name}</span>
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <span>{getTitle(player.overall)}</span>
+                        <span className="text-yellow-400">({player.overall})</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 md:flex gap-3 items-center text-xs">
@@ -238,7 +376,7 @@ export default function App() {
                 <div
                   key={p.name}
                   onClick={() => setSelected(p)}
-                  className={`flex items-center gap-2 p-2 border-l-4 cursor-pointer hover:bg-gray-800 ${isHT(p.tier) ? "border-yellow-400 bg-gray-800" : "border-gray-600"}`}
+                  className={`flex items-center gap-2 p-2 border-l-4 cursor-pointer hover:bg-gray-800 transform transition-all duration-200 ease-in-out hover:scale-[1.02] ${isHT(p.tier) ? "border-yellow-400 bg-gray-800" : "border-gray-600"}`}
                 >
                   <img src={`https://render.crafty.gg/3d/bust/${p.name}`} className="w-8" />
                   <span>{p.name}</span>
@@ -272,7 +410,7 @@ export default function App() {
 
       {selected && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4">
-          <div className="bg-gray-800 p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+          <div className="bg-gray-800 p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto relative transform transition-all duration-200 ease-in-out scale-100">
             <button
               className="absolute top-2 right-2 text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer"
               onClick={() => setSelected(null)}
@@ -287,29 +425,37 @@ export default function App() {
               />
               <div>
                 <h2 className="text-xl">{selected.name}</h2>
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <span>{getTitle(selected.overall)}</span>
+                  <span className="text-yellow-400">({selected.overall})</span>
+                </div>
                 <div className="text-sm text-gray-300">Rank: #{getRank(selected)}</div>
-                <div className="text-sm text-gray-300">Overall: {selected.overall}</div>
+                <div className="text-sm text-gray-300">
+                  Winrate: {stats[selected.name]?.winrate || 0}%
+                </div>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {gamemodes.slice(1).map((mode) => (
-                <div key={mode} className="flex items-center gap-2">
-                  <div className={`w-12 h-12 flex flex-col items-center justify-center rounded-xl border text-[10px] ${getTierColor(getTier(selected[mode]))}`}>
-                    <img src={icons[mode]} className="w-4 h-4 mb-[2px]" />
-                    <span>{getTier(selected[mode])}</span>
-                  </div>
-                  <span className="text-sm">{formatName(mode)}</span>
-                </div>
-              ))}
-            </div>
+  {gamemodes.slice(1)
+    .filter((mode) => getTier(selected[mode]) !== "Unranked")
+    .map((mode) => (
+      <div key={mode} className="flex items-center gap-2">
+        <div className={`w-12 h-12 flex flex-col items-center justify-center rounded-xl border text-[10px] ${getTierColor(getTier(selected[mode]))}`}>
+          <img src={icons[mode]} className="w-4 h-4 mb-[2px]" />
+          <span>{getTier(selected[mode])}</span>
+        </div>
+        <span className="text-sm">{formatName(mode)}</span>
+      </div>
+    ))}
+</div>
           </div>
         </div>
       )}
 
       {showKit && tab !== "overall" && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4">
-          <div className="bg-gray-800 p-4 rounded max-w-3xl w-full relative">
+          <div className="bg-gray-800 p-4 rounded max-w-3xl w-full relative transform transition-all duration-200 ease-in-out scale-100">
             <button
               className="absolute top-2 right-2 text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-700"
               onClick={() => setShowKit(false)}
