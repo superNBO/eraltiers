@@ -57,23 +57,23 @@ function InformationModal() {
                   <div className="space-y-4">
                     <div>
                       <div className="flex items-center gap-2 text-yellow-400"><img src="https://mctiers.com/icons/tier_1.svg" className="w-5" /> Tier 1</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-yellow-600/30 px-2 py-1 rounded">↑ 60 Points</span><span className="bg-yellow-600/30 px-2 py-1 rounded">↓ 45 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-yellow-600/30 px-2 py-1 rounded">↓ 60 Points</span><span className="bg-yellow-600/30 px-2 py-1 rounded">↓ 45 Points</span></div>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 text-gray-300"><img src="https://mctiers.com/icons/tier_2.svg" className="w-5" /> Tier 2</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-600/30 px-2 py-1 rounded">↑ 30 Points</span><span className="bg-gray-600/30 px-2 py-1 rounded">↓ 20 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-600/30 px-2 py-1 rounded">↓ 30 Points</span><span className="bg-gray-600/30 px-2 py-1 rounded">↓ 20 Points</span></div>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 text-orange-400"><img src="https://mctiers.com/icons/tier_3.svg" className="w-5" /> Tier 3</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-orange-600/30 px-2 py-1 rounded">↑ 10 Points</span><span className="bg-orange-600/30 px-2 py-1 rounded">↓ 6 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-orange-600/30 px-2 py-1 rounded">↓ 10 Points</span><span className="bg-orange-600/30 px-2 py-1 rounded">↓ 6 Points</span></div>
                     </div>
                     <div>
                       <div className="text-gray-400">Tier 4</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↑ 4 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 3 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 4 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 3 Points</span></div>
                     </div>
                     <div>
                       <div className="text-gray-400">Tier 5</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↑ 2 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 1 Point</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 2 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 1 Point</span></div>
                     </div>
                   </div>
                 </div>
@@ -108,6 +108,7 @@ const gamemodes = [
 ];
 
 function formatName(name) {
+  if (name === "spear") return "Spear Mace";
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
