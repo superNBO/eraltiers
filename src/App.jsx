@@ -8,8 +8,14 @@ function InformationModal() {
     <>
       <button onClick={() => setOpen(true)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-xl text-white transform transition-all duration-200 ease-in-out hover:scale-105">Information</button>
       {open && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 transition-all duration-200 ease-in-out">
-          <div className="bg-[#0f172a] w-[420px] max-h-[80vh] rounded-2xl p-4 overflow-hidden relative transform transition-all duration-200 ease-in-out scale-100">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          style={{ animation: "modalFadeIn 180ms ease-out" }}
+        >
+          <div
+            className="bg-[#0f172a] w-[420px] max-h-[80vh] rounded-2xl p-4 overflow-hidden relative"
+            style={{ animation: "modalPopIn 220ms ease-out" }}
+          >
             <button onClick={() => setOpen(false)} className="absolute top-3 right-4 text-white text-xl">✕</button>
             <div className="flex bg-gray-800 rounded-xl mb-4 overflow-hidden">
               <button onClick={() => setTab("titles")} className={`flex-1 py-2 ${tab === "titles" ? "bg-gray-700" : ""}`}>Titles</button>
@@ -57,23 +63,23 @@ function InformationModal() {
                   <div className="space-y-4">
                     <div>
                       <div className="flex items-center gap-2 text-yellow-400"><img src="https://mctiers.com/icons/tier_1.svg" className="w-5" /> Tier 1</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-yellow-600/30 px-2 py-1 rounded">↓ 60 Points</span><span className="bg-yellow-600/30 px-2 py-1 rounded">↓ 45 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-yellow-600/30 px-2 py-1 rounded">{"\u2191"} 60 Points</span><span className="bg-yellow-600/30 px-2 py-1 rounded">{"\u2193"} 45 Points</span></div>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 text-gray-300"><img src="https://mctiers.com/icons/tier_2.svg" className="w-5" /> Tier 2</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-600/30 px-2 py-1 rounded">↓ 30 Points</span><span className="bg-gray-600/30 px-2 py-1 rounded">↓ 20 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-600/30 px-2 py-1 rounded">{"\u2191"} 30 Points</span><span className="bg-gray-600/30 px-2 py-1 rounded">{"\u2193"} 20 Points</span></div>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 text-orange-400"><img src="https://mctiers.com/icons/tier_3.svg" className="w-5" /> Tier 3</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-orange-600/30 px-2 py-1 rounded">↓ 10 Points</span><span className="bg-orange-600/30 px-2 py-1 rounded">↓ 6 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-orange-600/30 px-2 py-1 rounded">{"\u2191"} 10 Points</span><span className="bg-orange-600/30 px-2 py-1 rounded">{"\u2193"} 6 Points</span></div>
                     </div>
                     <div>
                       <div className="text-gray-400">Tier 4</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 4 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 3 Points</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">{"\u2191"} 4 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">{"\u2193"} 3 Points</span></div>
                     </div>
                     <div>
                       <div className="text-gray-400">Tier 5</div>
-                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 2 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">↓ 1 Point</span></div>
+                      <div className="ml-6 flex gap-2 mt-1"><span className="bg-gray-500/20 px-2 py-1 rounded">{"\u2191"} 2 Points</span><span className="bg-gray-500/20 px-2 py-1 rounded">{"\u2193"} 1 Point</span></div>
                     </div>
                   </div>
                 </div>
@@ -284,6 +290,24 @@ export default function App() {
 
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
+      <style>{`
+        @keyframes modalFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes modalPopIn {
+          from {
+            opacity: 0;
+            transform: scale(0.92) translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+      `}</style>
+
       <div className="flex justify-center mb-6">
         <img src="https://i.imgur.com/NKynxol.png" className="h-20" />
       </div>
@@ -421,8 +445,14 @@ export default function App() {
       </div>
 
       {selected && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4">
-          <div className="bg-gray-800 p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto relative transform transition-all duration-200 ease-in-out scale-100">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4"
+          style={{ animation: "modalFadeIn 180ms ease-out" }}
+        >
+          <div
+            className="bg-gray-800 p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto relative"
+            style={{ animation: "modalPopIn 220ms ease-out" }}
+          >
             <button
               className="absolute top-2 right-2 text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-700 cursor-pointer"
               onClick={() => setSelected(null)}
@@ -494,3 +524,4 @@ export default function App() {
     </div>
   );
 }
+
