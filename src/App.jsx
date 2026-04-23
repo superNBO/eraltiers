@@ -188,6 +188,7 @@ export default function App() {
   const [showKit, setShowKit] = useState(false);
   const [fights, setFights] = useState([]);
   const [stats, setStats] = useState({});
+  const [showAllFights, setShowAllFights] = useState(false);
 
   useEffect(() => {
     fetchPlayers();
@@ -219,8 +220,7 @@ export default function App() {
 
     const fightsData = data || [];
 
-    // keep only last 10 for UI display
-    setFights(fightsData.slice(0, 10));
+    setFights(fightsData);
 
     // calculate accurate winrate stats from ALL fights
     const statsMap = {};
@@ -253,6 +253,7 @@ export default function App() {
   const filtered = players.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
+  const visibleFights = showAllFights ? fights : fights.slice(0, 10);
 
   function getRank(player) {
     const sorted = [...players].sort((a, b) => b.overall - a.overall);
@@ -388,11 +389,11 @@ export default function App() {
         </div>
       )}
 
-      {/* Recent Fights */}
+      {/* Fights */}
       <div className="mt-10">
-        <h2 className="text-xl mb-4 text-center">Recent Fights</h2>
+        <h2 className="text-xl mb-4 text-center">Fights</h2>
         <div className="space-y-2 max-w-2xl mx-auto">
-          {fights.map((f, i) => (
+          {visibleFights.map((f, i) => (
             <div key={i} className="bg-gray-800 p-3 rounded flex justify-between text-sm">
               <div className="flex gap-2">
                 <span className="text-blue-400">{f.player1}</span>
@@ -407,6 +408,16 @@ export default function App() {
             </div>
           ))}
         </div>
+        {fights.length > 10 && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => setShowAllFights((prev) => !prev)}
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200"
+            >
+              {showAllFights ? "Show Less" : "Show All"}
+            </button>
+          </div>
+        )}
       </div>
 
       {selected && (
@@ -434,6 +445,16 @@ export default function App() {
                 <div className="text-sm text-gray-300">
                   Winrate: {stats[selected.name]?.winrate || 0}%
                 </div>
+                {selected.clips && (
+                  <a
+                    href={selected.clips}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex mt-3 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-sm text-white transition-all duration-200 ease-in-out hover:scale-105"
+                  >
+                    Clips/Montages
+                  </a>
+                )}
               </div>
             </div>
 
