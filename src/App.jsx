@@ -149,7 +149,7 @@ const kitImages = {
   crystal: "https://trtier.com/images/crystal-detail.jpg",
   ogvanilla: "https://trtier.com/images/ogv-detail.jpg",
   bow: "https://i.imgur.com/Fp0ycv3.png",
-  spear: "https://i.imgur.com/XkDuVHr.png",
+  spear: "https://i.imgur.com/jNWOglz.png",
   legacy: "https://i.imgur.com/tDqsCJo.png",
 };
 
