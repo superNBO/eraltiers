@@ -259,6 +259,9 @@ export default function App() {
   const filtered = players.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
+  const searchResults = search.trim()
+    ? [...filtered].sort((a, b) => b.overall - a.overall)
+    : [];
   const visibleFights = showAllFights ? fights : fights.slice(0, 10);
 
   function getRank(player) {
@@ -336,15 +339,45 @@ export default function App() {
         </div>
       )}
 
-      <div className="flex gap-2 mb-6">
-        <input
-          placeholder="Search player..."
-          className="w-full p-3 rounded-xl bg-gray-800 border-2 border-gray-600 focus:border-blue-500 outline-none transition-all duration-200 ease-in-out"
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setTab("overall");
-          }}
-        />
+      <div className="flex gap-2 items-start mb-6">
+        <div className="w-full relative">
+          <input
+            placeholder="Search player..."
+            value={search}
+            className="w-full p-3 rounded-xl bg-gray-800 border-2 border-gray-600 focus:border-blue-500 outline-none transition-all duration-200 ease-in-out"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setTab("overall");
+            }}
+          />
+          {searchResults.length > 0 && (
+            <div className="absolute left-0 right-0 mt-2 bg-[#16233a] border border-blue-900/50 rounded-2xl overflow-hidden shadow-2xl z-40">
+              {searchResults.map((player) => (
+                <button
+                  key={player.name}
+                  type="button"
+                  onClick={() => {
+                    setSelected(player);
+                    setSearch("");
+                  }}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left border-b border-blue-900/30 last:border-b-0 hover:bg-[#1a2b45] transition-colors duration-200"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img
+                      src={`https://render.crafty.gg/3d/bust/${player.name}`}
+                      className="w-10 h-10 rounded object-cover"
+                    />
+                    <div className="min-w-0">
+                      <div className="text-blue-300 font-semibold truncate">{player.name}</div>
+                      <div className="text-sm text-gray-400 truncate">{getTitle(player.overall)}</div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500">#{getRank(player)}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <InformationModal />
       </div>
 
