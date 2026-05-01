@@ -1,4 +1,37 @@
 import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+import siteLogo from "./assets/ERALTIERS.png";
+import overallIcon from "./assets/icons/overall.svg";
+import swordIcon from "./assets/icons/sword.svg";
+import axeIcon from "./assets/icons/axe.svg";
+import uhcIcon from "./assets/icons/uhc.svg";
+import potIcon from "./assets/icons/pot.svg";
+import nethopIcon from "./assets/icons/nethop.svg";
+import legacyopIcon from "./assets/icons/legacyop.png";
+import maceIcon from "./assets/icons/mace.svg";
+import cartIcon from "./assets/icons/minecart.svg";
+import smpIcon from "./assets/icons/smp.svg";
+import diamondsmpIcon from "./assets/icons/dia_smp.svg";
+import crystalIcon from "./assets/icons/vanilla.svg";
+import ogvanillaIcon from "./assets/icons/og_vanilla.svg";
+import bowIcon from "./assets/icons/bow.svg";
+import spearIcon from "./assets/icons/spear.png";
+import legacyIcon from "./assets/icons/legacy.png";
+import swordKit from "./assets/kitdetails/sword-detail.jpg";
+import axeKit from "./assets/kitdetails/axe-detail.jpg";
+import uhcKit from "./assets/kitdetails/uhc-detail.jpg";
+import potKit from "./assets/kitdetails/pot-detail.jpg";
+import nethopKit from "./assets/kitdetails/nethpot-detail.jpg";
+import legacyopKit from "./assets/kitdetails/legacyop-detail.png";
+import maceKit from "./assets/kitdetails/mace-detail.jpg";
+import cartKit from "./assets/kitdetails/cart-detail.png";
+import smpKit from "./assets/kitdetails/smp-detail.jpg";
+import diamondsmpKit from "./assets/kitdetails/diasmp-detail.jpg";
+import crystalKit from "./assets/kitdetails/crystal-detail.jpg";
+import ogvanillaKit from "./assets/kitdetails/ogv-detail.jpg";
+import bowKit from "./assets/kitdetails/bow-detail.png";
+import spearKit from "./assets/kitdetails/spearmace-detail.png";
+import legacyKit from "./assets/kitdetails/legacy-detail.png";
 
 function InformationModal() {
   const [open, setOpen] = useState(false);
@@ -92,8 +125,6 @@ function InformationModal() {
   );
 }
 
-import { createClient } from "@supabase/supabase-js";
-
 const supabaseUrl = "https://wlkgxearhywnsdevwdvo.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indsa2d4ZWFyaHl3bnNkZXZ3ZHZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NDI5NDEsImV4cCI6MjA5MDUxODk0MX0.xGnJYAtLRlAmnqDftw7txD1JxZZcTp_XO5UDRSbNC9w";
 
@@ -110,7 +141,7 @@ const tierMap = {
 
 const gamemodes = [
   "overall",
-  "sword","axe","uhc","pot","nethop","legacyop","mace","smp","diamondsmp","crystal","ogvanilla","bow","spear","legacy",
+  "sword","axe","uhc","pot","nethop","legacyop","mace","cart","smp","diamondsmp","crystal","ogvanilla","bow","spear","legacy",
 ];
 
 function formatName(name) {
@@ -119,38 +150,40 @@ function formatName(name) {
 }
 
 const icons = {
-  overall: "https://mctiers.com/tier_icons/overall.svg",
-  sword: "https://mctiers.com/tier_icons/sword.svg",
-  axe: "https://mctiers.com/tier_icons/axe.svg",
-  uhc: "https://mctiers.com/tier_icons/uhc.svg",
-  pot: "https://mctiers.com/tier_icons/pot.svg",
-  nethop: "https://mctiers.com/tier_icons/nethop.svg",
-  legacyop: "https://i.imgur.com/ThJVGu7.png",
-  mace: "https://mctiers.com/tier_icons/mace.svg",
-  smp: "https://mctiers.com/tier_icons/smp.svg",
-  diamondsmp: "https://www.subtiers.net/assets/dia_smp-523efa38.svg",
-  crystal: "https://mctiers.com/tier_icons/vanilla.svg",
-  ogvanilla: "https://www.subtiers.net/assets/og_vanilla-bd47093f.svg",
-  bow: "https://www.subtiers.net/assets/bow-0b52585f.svg",
-  spear: "https://i.imgur.com/XSUyJ37.png",
-  legacy: "https://i.imgur.com/xUeS3FM.png",
+  overall: overallIcon,
+  sword: swordIcon,
+  axe: axeIcon,
+  uhc: uhcIcon,
+  pot: potIcon,
+  nethop: nethopIcon,
+  legacyop: legacyopIcon,
+  mace: maceIcon,
+  cart: cartIcon,
+  smp: smpIcon,
+  diamondsmp: diamondsmpIcon,
+  crystal: crystalIcon,
+  ogvanilla: ogvanillaIcon,
+  bow: bowIcon,
+  spear: spearIcon,
+  legacy: legacyIcon,
 };
 
 const kitImages = {
-  sword: "https://trtier.com/images/sword-detail.jpg",
-  axe: "https://trtier.com/images/axe-detail.jpg",
-  uhc: "https://trtier.com/images/uhc-detail.jpg",
-  pot: "https://trtier.com/images/pot-detail.jpg",
-  nethop: "https://trtier.com/images/nethpot-detail.jpg",
-  legacyop: "https://i.imgur.com/BYtRnzU.png",
-  mace: "https://trtier.com/images/mace-detail.jpg",
-  smp: "https://trtier.com/images/smp-detail.jpg",
-  diamondsmp: "https://trtier.com/images/diasmp-detail.jpg",
-  crystal: "https://trtier.com/images/crystal-detail.jpg",
-  ogvanilla: "https://trtier.com/images/ogv-detail.jpg",
-  bow: "https://i.imgur.com/Fp0ycv3.png",
-  spear: "https://i.imgur.com/jNWOglz.png",
-  legacy: "https://i.imgur.com/tDqsCJo.png",
+  sword: swordKit,
+  axe: axeKit,
+  uhc: uhcKit,
+  pot: potKit,
+  nethop: nethopKit,
+  legacyop: legacyopKit,
+  mace: maceKit,
+  cart: cartKit,
+  smp: smpKit,
+  diamondsmp: diamondsmpKit,
+  crystal: crystalKit,
+  ogvanilla: ogvanillaKit,
+  bow: bowKit,
+  spear: spearKit,
+  legacy: legacyKit,
 };
 
 const tierColumns = [1,2,3,4,5];
@@ -312,7 +345,7 @@ export default function App() {
       `}</style>
 
       <div className="flex justify-center mb-6">
-        <img src="https://i.imgur.com/NKynxol.png" className="h-20" />
+        <img src={siteLogo} className="h-20" />
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 mb-6">
