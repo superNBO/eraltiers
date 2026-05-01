@@ -298,8 +298,7 @@ export default function App() {
   const visibleFights = showAllFights ? fights : fights.slice(0, 10);
 
   function getRank(player) {
-    const sorted = [...players].sort((a, b) => b.overall - a.overall);
-    return sorted.findIndex((p) => p.name === player.name) + 1;
+    return players.filter((p) => p.overall > player.overall).length + 1;
   }
 
   function getColumns() {
