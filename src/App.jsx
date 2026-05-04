@@ -219,6 +219,30 @@ function getTitle(points) {
   return "Rookie";
 }
 
+const titleIcons = {
+  "Combat Grandmaster": "https://mctiers.com/titles/combat_grandmaster.webp",
+  "Combat Master": "https://mctiers.com/titles/combat_master.webp",
+  "Combat Ace": "https://mctiers.com/titles/combat_ace.svg",
+  "Combat Specialist": "https://mctiers.com/titles/combat_specialist.svg",
+  "Combat Pro": "https://mctiers.com/titles/combat_cadet.svg",
+  "Combat Novice": "https://mctiers.com/titles/combat_novice.svg",
+  Rookie: "https://mctiers.com/titles/rookie.svg",
+};
+
+function getRankBackground(rank) {
+  if (rank === 1) return "bg-yellow-600/30";
+  if (rank === 2) return "bg-gray-400/30";
+  if (rank === 3) return "bg-amber-700/30";
+  return "bg-gray-800";
+}
+
+function getProfileRankBackground(rank) {
+  if (rank === 1) return "bg-yellow-700";
+  if (rank === 2) return "bg-gray-500";
+  if (rank === 3) return "bg-amber-800";
+  return "bg-gray-800";
+}
+
 export default function App() {
   const [players, setPlayers] = useState([]);
   const [search, setSearch] = useState("");
@@ -415,14 +439,14 @@ export default function App() {
 
       {tab === "overall" && (
         <div className="space-y-2">
-          {filtered
+            {filtered
             .sort((a, b) => b.overall - a.overall)
             .map((player) => {
               const rank = getRank(player);
               return (
                 <div
                   key={player.name}
-                  className={`p-3 rounded flex justify-between cursor-pointer hover:bg-gray-700 transform transition-all duration-200 ease-in-out hover:scale-[1.02] ${rank===1?"bg-yellow-600/30":rank===2?"bg-gray-400/30":rank===3?"bg-amber-700/30":"bg-gray-800"}`}
+                  className={`p-3 rounded flex justify-between cursor-pointer hover:bg-gray-700 transform transition-all duration-200 ease-in-out hover:scale-[1.02] ${getRankBackground(rank)}`}
                   onClick={() => setSelected(player)}
                 >
                   <div className="flex items-center gap-4">
@@ -515,7 +539,7 @@ export default function App() {
           style={{ animation: "modalFadeIn 180ms ease-out" }}
         >
           <div
-            className="bg-gray-800 p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto relative"
+            className={`${getProfileRankBackground(getRank(selected))} p-6 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto relative shadow-2xl`}
             style={{ animation: "modalPopIn 220ms ease-out" }}
           >
             <button
@@ -526,46 +550,62 @@ export default function App() {
             </button>
 
             <div className="flex items-center justify-center gap-4 mb-4">
-              <img
-                src={`https://render.crafty.gg/3d/full/${selected.name}`}
-                className="w-20 max-w-full object-contain"
-              />
-              <div>
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-black/20 border border-white/20 shrink-0 flex items-center justify-center">
+                <img
+                  src={`https://render.crafty.gg/3d/full/${selected.name}`}
+                  className="w-full h-full object-cover scale-100"
+                  style={{ objectPosition: "center 10%" }}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
                 <h2 className="text-xl">{selected.name}</h2>
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span>{getTitle(selected.overall)}</span>
-                  <span className="text-yellow-400">({selected.overall})</span>
+                <div className="flex items-center gap-2 text-xs text-gray-100 mt-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <img src={titleIcons[getTitle(selected.overall)]} className="w-5 h-5 shrink-0" />
+                    <span className="truncate">
+                      {getTitle(selected.overall)} <span className="text-yellow-200">({selected.overall})</span>
+                    </span>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-300">Rank: #{getRank(selected)}</div>
-                <div className="text-sm text-gray-300">
+                <div className="text-sm text-gray-100 mt-2">Rank: #{getRank(selected)}</div>
+                <div className="text-sm text-gray-100">
                   Winrate: {stats[selected.name]?.winrate || 0}%
                 </div>
-                {selected.clips && (
-                  <a
-                    href={selected.clips}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex mt-3 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-sm text-white transition-all duration-200 ease-in-out hover:scale-105"
-                  >
-                    Clips/Montages
-                  </a>
-                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-  {gamemodes.slice(1)
-    .filter((mode) => getTier(selected[mode]) !== "Unranked")
-    .map((mode) => (
-      <div key={mode} className="flex items-center gap-2">
-        <div className={`w-12 h-12 flex flex-col items-center justify-center rounded-xl border text-[10px] ${getTierColor(getTier(selected[mode]))}`}>
-          <img src={icons[mode]} className="w-4 h-4 mb-[2px]" />
-          <span>{getTier(selected[mode])}</span>
-        </div>
-        <span className="text-sm">{formatName(mode)}</span>
-      </div>
-    ))}
-</div>
+            <div className="grid grid-cols-3 gap-3">
+              {gamemodes.slice(1)
+                .filter((mode) => getTier(selected[mode]) !== "Unranked")
+                .map((mode) => (
+                  <div
+                    key={mode}
+                    className="relative group"
+                  >
+                    <div
+                      className={`w-full h-14 flex items-center justify-center gap-2 rounded-2xl border text-[10px] ${getTierColor(getTier(selected[mode]))}`}
+                    >
+                      <img src={icons[mode]} className="w-5 h-5 shrink-0" />
+                      <span>{getTier(selected[mode])}</span>
+                    </div>
+                    <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 opacity-0 transition-all duration-150 ease-out group-hover:opacity-100">
+                      <div className="whitespace-nowrap rounded-lg border border-gray-500 bg-gray-900 px-3 py-2 text-[10px] text-white shadow-xl">
+                        {formatName(mode)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+            {selected.clips && (
+              <a
+                href={selected.clips}
+                target="_blank"
+                rel="noreferrer"
+                className="flex mt-5 w-full items-center justify-center px-4 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-sm text-white transition-all duration-200 ease-in-out hover:scale-[1.02]"
+              >
+                Clips/Montages
+              </a>
+            )}
           </div>
         </div>
       )}
