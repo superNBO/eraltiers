@@ -661,7 +661,7 @@ export default function App() {
                   onClick={() => setSelected(player)}
                 >
                   <div className="flex items-center gap-4">
-                    <span>#{rank}</span>
+                    <span className="text-lg font-bold italic">{rank}.</span>
                     <img src={`https://render.crafty.gg/3d/bust/${player.name}`} className="w-12" />
                     <div className="flex flex-col">
                       <span>{player.name}</span>
