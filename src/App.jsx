@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import siteLogo from "./assets/ERALTIERS.png";
 import overallIcon from "./assets/icons/overall.svg";
@@ -39,14 +39,17 @@ function InformationModal() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-xl text-white transform transition-all duration-200 ease-in-out hover:scale-105">Information</button>
+      <button onClick={() => setOpen(true)} className="px-3 sm:px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-xl text-white transform transition-all duration-200 ease-in-out hover:scale-105">
+        <span className="sm:hidden">Info</span>
+        <span className="hidden sm:inline">Information</span>
+      </button>
       {open && (
         <div
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
           style={{ animation: "modalFadeIn 180ms ease-out" }}
         >
           <div
-            className="bg-[#0f172a] w-[420px] max-h-[80vh] rounded-2xl p-4 overflow-hidden relative"
+            className="bg-[#0f172a] w-full max-w-[420px] max-h-[80vh] rounded-2xl p-4 overflow-hidden relative mx-4 text-xs sm:text-sm"
             style={{ animation: "modalPopIn 220ms ease-out" }}
           >
             <button onClick={() => setOpen(false)} className="absolute top-3 right-4 text-white text-xl">✕</button>
@@ -252,10 +255,63 @@ export default function App() {
   const [fights, setFights] = useState([]);
   const [stats, setStats] = useState({});
   const [showAllFights, setShowAllFights] = useState(false);
+  const [canScrollGamemodesLeft, setCanScrollGamemodesLeft] = useState(false);
+  const [canScrollGamemodesRight, setCanScrollGamemodesRight] = useState(false);
+  const [gamemodeThumbWidth, setGamemodeThumbWidth] = useState(0);
+  const [gamemodeThumbOffset, setGamemodeThumbOffset] = useState(0);
+  const gamemodeRailRef = useRef(null);
+  const gamemodeTrackRef = useRef(null);
+  const gamemodeDragRef = useRef({
+    isDragging: false,
+    startX: 0,
+    startScrollLeft: 0,
+    moved: false,
+  });
+  const gamemodeThumbDragRef = useRef({
+    isDragging: false,
+    startX: 0,
+    startScrollLeft: 0,
+  });
 
   useEffect(() => {
     fetchPlayers();
     fetchFights();
+  }, []);
+
+  useEffect(() => {
+    const rail = gamemodeRailRef.current;
+    if (!rail) return;
+
+    function updateGamemodeFade() {
+      const maxScroll = Math.max(rail.scrollWidth - rail.clientWidth, 0);
+      const scrollLeft = Math.max(rail.scrollLeft, 0);
+
+      setCanScrollGamemodesLeft(scrollLeft > 1);
+      setCanScrollGamemodesRight(scrollLeft < maxScroll - 1);
+
+      if (maxScroll <= 0) {
+        setGamemodeThumbWidth(0);
+        setGamemodeThumbOffset(0);
+        return;
+      }
+
+      const visibleRatio = rail.clientWidth / rail.scrollWidth;
+      const thumbWidth = Math.max(visibleRatio * rail.clientWidth, 56);
+      const travelSpace = rail.clientWidth - thumbWidth;
+      const thumbOffset = travelSpace * (scrollLeft / maxScroll);
+
+      setGamemodeThumbWidth(thumbWidth);
+      setGamemodeThumbOffset(thumbOffset);
+    }
+
+    updateGamemodeFade();
+    rail.addEventListener("scroll", updateGamemodeFade, { passive: true });
+    window.addEventListener("resize", updateGamemodeFade);
+
+    return () => {
+      rail.removeEventListener("scroll", updateGamemodeFade);
+      window.removeEventListener("resize", updateGamemodeFade);
+    };
   }, []);
 
   async function fetchPlayers() {
@@ -347,6 +403,107 @@ export default function App() {
     return cols;
   }
 
+  function handleGamemodePointerDown(event) {
+    const rail = gamemodeRailRef.current;
+    if (!rail) return;
+
+    gamemodeDragRef.current.isDragging = true;
+    gamemodeDragRef.current.startX = event.clientX;
+    gamemodeDragRef.current.startScrollLeft = rail.scrollLeft;
+    gamemodeDragRef.current.moved = false;
+  }
+
+  function handleGamemodePointerMove(event) {
+    const rail = gamemodeRailRef.current;
+    const drag = gamemodeDragRef.current;
+    if (!rail || !drag.isDragging) return;
+
+    const deltaX = event.clientX - drag.startX;
+    if (Math.abs(deltaX) > 4) {
+      drag.moved = true;
+    }
+
+    rail.scrollLeft = drag.startScrollLeft - deltaX;
+  }
+
+  function handleGamemodePointerUp() {
+    const drag = gamemodeDragRef.current;
+    if (!drag.isDragging) return;
+
+    drag.isDragging = false;
+    window.setTimeout(() => {
+      drag.moved = false;
+    }, 0);
+  }
+
+  function handleGamemodeClick(gamemode) {
+    if (gamemodeDragRef.current.moved) return;
+    setTab(gamemode);
+  }
+
+  function handleScrollbarThumbPointerDown(event) {
+    event.stopPropagation();
+    const rail = gamemodeRailRef.current;
+    if (!rail) return;
+
+    gamemodeThumbDragRef.current.isDragging = true;
+    gamemodeThumbDragRef.current.startX = event.clientX;
+    gamemodeThumbDragRef.current.startScrollLeft = rail.scrollLeft;
+  }
+
+  function handleScrollbarTrackPointerDown(event) {
+    const rail = gamemodeRailRef.current;
+    const track = gamemodeTrackRef.current;
+    if (!rail || !track) return;
+
+    const trackRect = track.getBoundingClientRect();
+    const clickX = event.clientX - trackRect.left;
+    const maxScroll = Math.max(rail.scrollWidth - rail.clientWidth, 0);
+    const maxThumbTravel = Math.max(trackRect.width - gamemodeThumbWidth, 0);
+
+    if (maxScroll <= 0 || maxThumbTravel <= 0) return;
+
+    const targetThumbLeft = Math.min(
+      Math.max(clickX - gamemodeThumbWidth / 2, 0),
+      maxThumbTravel
+    );
+
+    rail.scrollLeft = (targetThumbLeft / maxThumbTravel) * maxScroll;
+  }
+
+  useEffect(() => {
+    function handleWindowPointerMove(event) {
+      const rail = gamemodeRailRef.current;
+      const track = gamemodeTrackRef.current;
+      const drag = gamemodeThumbDragRef.current;
+
+      if (!rail || !track || !drag.isDragging) return;
+
+      const deltaX = event.clientX - drag.startX;
+      const maxScroll = Math.max(rail.scrollWidth - rail.clientWidth, 0);
+      const maxThumbTravel = Math.max(track.clientWidth - gamemodeThumbWidth, 0);
+
+      if (maxScroll <= 0 || maxThumbTravel <= 0) return;
+
+      const scrollDelta = (deltaX / maxThumbTravel) * maxScroll;
+      rail.scrollLeft = drag.startScrollLeft + scrollDelta;
+    }
+
+    function handleWindowPointerUp() {
+      gamemodeThumbDragRef.current.isDragging = false;
+    }
+
+    window.addEventListener("pointermove", handleWindowPointerMove);
+    window.addEventListener("pointerup", handleWindowPointerUp);
+    window.addEventListener("pointercancel", handleWindowPointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handleWindowPointerMove);
+      window.removeEventListener("pointerup", handleWindowPointerUp);
+      window.removeEventListener("pointercancel", handleWindowPointerUp);
+    };
+  }, [gamemodeThumbWidth]);
+
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
       <style>{`
@@ -365,23 +522,77 @@ export default function App() {
             transform: scale(1) translateY(0);
           }
         }
+
+        @keyframes fightReveal {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .gamemode-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        .gamemode-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
       `}</style>
 
       <div className="flex justify-center mb-6">
         <img src={siteLogo} className="h-20" />
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
-        {gamemodes.map((g) => (
-          <button
-            key={g}
-            onClick={() => setTab(g)}
-            className={`px-3 py-1 rounded flex items-center gap-2 transform transition-all duration-200 ease-in-out hover:scale-105 ${tab === g ? "bg-blue-500" : "bg-gray-700"}`}
-          >
-            {icons[g] && <img src={icons[g]} className="w-4 h-4" />}
-            {formatName(g)}
-          </button>
-        ))}
+      <div className="relative mb-6">
+        {canScrollGamemodesLeft && (
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent z-10" />
+        )}
+        {canScrollGamemodesRight && (
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 via-gray-900/80 to-transparent z-10" />
+        )}
+        <div
+          ref={gamemodeRailRef}
+          className="gamemode-scrollbar flex gap-2 overflow-x-auto px-3 py-1 touch-pan-x cursor-grab active:cursor-grabbing select-none"
+          onPointerDown={handleGamemodePointerDown}
+          onPointerMove={handleGamemodePointerMove}
+          onPointerUp={handleGamemodePointerUp}
+          onPointerCancel={handleGamemodePointerUp}
+          onPointerLeave={handleGamemodePointerUp}
+        >
+          {gamemodes.map((g) => (
+            <button
+              key={g}
+              onClick={() => handleGamemodeClick(g)}
+              className={`shrink-0 px-3 py-2 rounded-xl flex items-center gap-2 whitespace-nowrap border transition-all duration-200 ease-in-out hover:scale-105 ${tab === g ? "bg-blue-500 border-blue-300 shadow-lg shadow-blue-500/20" : "bg-gray-700 border-gray-600 hover:bg-gray-600"}`}
+            >
+              {icons[g] && <img src={icons[g]} className="w-4 h-4" />}
+              {formatName(g)}
+            </button>
+          ))}
+        </div>
+        {gamemodeThumbWidth > 0 && (
+          <div className="mt-3 px-3">
+            <div
+              ref={gamemodeTrackRef}
+              className="h-1.5 rounded-full bg-gray-800/90 border border-gray-700 overflow-hidden cursor-pointer"
+              onPointerDown={handleScrollbarTrackPointerDown}
+            >
+              <div
+                className="h-full rounded-full bg-blue-400/90 transition-[transform,width] duration-150 ease-out cursor-grab active:cursor-grabbing"
+                onPointerDown={handleScrollbarThumbPointerDown}
+                style={{
+                  width: `${gamemodeThumbWidth}px`,
+                  transform: `translateX(${gamemodeThumbOffset}px)`,
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {tab !== "overall" && (
@@ -507,13 +718,25 @@ export default function App() {
         <h2 className="text-xl mb-4 text-center">Fights</h2>
         <div className="space-y-2 max-w-2xl mx-auto">
           {visibleFights.map((f, i) => (
-            <div key={i} className="bg-gray-800 p-3 rounded flex justify-between text-sm">
-              <div className="flex gap-2">
+            <div
+              key={i}
+              className="bg-gray-800 p-3 rounded flex flex-col gap-2 text-xs sm:text-sm sm:flex-row sm:items-center sm:justify-between"
+              style={
+                showAllFights && i >= 10
+                  ? {
+                      animation: "fightReveal 240ms ease-out",
+                      animationDelay: `${(i - 10) * 35}ms`,
+                      animationFillMode: "both",
+                    }
+                  : undefined
+              }
+            >
+              <div className="flex flex-wrap gap-2">
                 <span className="text-blue-400">{f.player1}</span>
                 <span>vs</span>
                 <span className="text-red-400">{f.player2}</span>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-3 sm:gap-4 text-gray-300">
                 <span>{f.score}</span>
                 <span className="text-green-400">{f.winner}</span>
                 <span className="text-gray-400">{formatName(f.gamemode)}</span>
@@ -539,7 +762,7 @@ export default function App() {
           style={{ animation: "modalFadeIn 180ms ease-out" }}
         >
           <div
-            className={`${getProfileRankBackground(getRank(selected))} p-6 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto relative shadow-2xl`}
+            className={`${getProfileRankBackground(getRank(selected))} p-4 sm:p-6 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto relative shadow-2xl text-xs sm:text-sm`}
             style={{ animation: "modalPopIn 220ms ease-out" }}
           >
             <button
@@ -549,8 +772,8 @@ export default function App() {
               ×
             </button>
 
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="w-24 h-24 rounded-full overflow-hidden bg-black/20 border border-white/20 shrink-0 flex items-center justify-center">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-black/20 border border-white/20 shrink-0 flex items-center justify-center">
                 <img
                   src={`https://render.crafty.gg/3d/full/${selected.name}`}
                   className="w-full h-full object-cover scale-100"
@@ -558,23 +781,23 @@ export default function App() {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-xl">{selected.name}</h2>
-                <div className="flex items-center gap-2 text-xs text-gray-100 mt-2">
+                <h2 className="text-base sm:text-xl break-words">{selected.name}</h2>
+                <div className="flex items-center gap-2 text-[10px] sm:text-xs text-gray-100 mt-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <img src={titleIcons[getTitle(selected.overall)]} className="w-5 h-5 shrink-0" />
+                    <img src={titleIcons[getTitle(selected.overall)]} className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                     <span className="truncate">
                       {getTitle(selected.overall)} <span className="text-yellow-200">({selected.overall})</span>
                     </span>
                   </div>
                 </div>
-                <div className="text-sm text-gray-100 mt-2">Rank: #{getRank(selected)}</div>
-                <div className="text-sm text-gray-100">
+                <div className="text-xs sm:text-sm text-gray-100 mt-2">Rank: #{getRank(selected)}</div>
+                <div className="text-xs sm:text-sm text-gray-100">
                   Winrate: {stats[selected.name]?.winrate || 0}%
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {gamemodes.slice(1)
                 .filter((mode) => getTier(selected[mode]) !== "Unranked")
                 .map((mode) => (
@@ -583,13 +806,13 @@ export default function App() {
                     className="relative group"
                   >
                     <div
-                      className={`w-full h-14 flex items-center justify-center gap-2 rounded-2xl border text-[10px] ${getTierColor(getTier(selected[mode]))}`}
+                      className={`w-full h-12 sm:h-14 flex items-center justify-center gap-2 rounded-2xl border text-[9px] sm:text-[10px] ${getTierColor(getTier(selected[mode]))}`}
                     >
-                      <img src={icons[mode]} className="w-5 h-5 shrink-0" />
+                      <img src={icons[mode]} className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                       <span>{getTier(selected[mode])}</span>
                     </div>
                     <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 opacity-0 transition-all duration-150 ease-out group-hover:opacity-100">
-                      <div className="whitespace-nowrap rounded-lg border border-gray-500 bg-gray-900 px-3 py-2 text-[10px] text-white shadow-xl">
+                      <div className="whitespace-nowrap rounded-lg border border-gray-500 bg-gray-900 px-3 py-2 text-[9px] sm:text-[10px] text-white shadow-xl">
                         {formatName(mode)}
                       </div>
                     </div>
@@ -601,7 +824,7 @@ export default function App() {
                 href={selected.clips}
                 target="_blank"
                 rel="noreferrer"
-                className="flex mt-5 w-full items-center justify-center px-4 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-sm text-white transition-all duration-200 ease-in-out hover:scale-[1.02]"
+                className="flex mt-5 w-full items-center justify-center px-4 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-xs sm:text-sm text-white transition-all duration-200 ease-in-out hover:scale-[1.02]"
               >
                 Clips/Montages
               </a>
@@ -612,14 +835,14 @@ export default function App() {
 
       {showKit && tab !== "overall" && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4">
-          <div className="bg-gray-800 p-4 rounded max-w-3xl w-full relative transform transition-all duration-200 ease-in-out scale-100">
+          <div className="bg-gray-800 p-3 sm:p-4 rounded-2xl max-w-3xl max-h-[90vh] w-full overflow-y-auto relative transform transition-all duration-200 ease-in-out scale-100 text-xs sm:text-sm">
             <button
               className="absolute top-2 right-2 text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-700"
               onClick={() => setShowKit(false)}
             >
               ×
             </button>
-            <h2 className="text-lg mb-3 text-center">
+            <h2 className="text-base sm:text-lg mb-3 text-center pr-10">
               {formatName(tab)} Kit {tab === "legacy" && "(1.8)"}
             </h2>
             <img src={kitImages[tab]} className="w-full rounded" />
