@@ -345,25 +345,76 @@ export default function App() {
     const statsMap = {};
 
     fightsData.forEach((f) => {
-      const { player1, player2, winner } = f;
+      const { player1, player2, winner, score } = f;
 
-      if (!statsMap[player1]) statsMap[player1] = { wins: 0, losses: 0 };
-      if (!statsMap[player2]) statsMap[player2] = { wins: 0, losses: 0 };
+      if (!statsMap[player1]) {
+        statsMap[player1] = {
+          pointsWon: 0,
+          pointsPlayed: 0,
+          matchesWon: 0,
+          matchesPlayed: 0,
+        };
+      }
+      if (!statsMap[player2]) {
+        statsMap[player2] = {
+          pointsWon: 0,
+          pointsPlayed: 0,
+          matchesWon: 0,
+          matchesPlayed: 0,
+        };
+      }
+
+      const scoreMatch = String(score || "").match(/^\s*(\d+)\s*-\s*(\d+)\s*$/);
+      if (!scoreMatch) return;
+
+      const parsedScore1 = Number(scoreMatch[1]);
+      const parsedScore2 = Number(scoreMatch[2]);
+
+      if (
+        Number.isNaN(parsedScore1) ||
+        Number.isNaN(parsedScore2) ||
+        parsedScore1 === parsedScore2 ||
+        winner !== player1 && winner !== player2
+      ) {
+        return;
+      }
+
+      const highScore = Math.max(parsedScore1, parsedScore2);
+      const lowScore = Math.min(parsedScore1, parsedScore2);
+      const totalPoints = highScore + lowScore;
+
+      let score1 = parsedScore1;
+      let score2 = parsedScore2;
 
       if (winner === player1) {
-        statsMap[player1].wins++;
-        statsMap[player2].losses++;
+        score1 = highScore;
+        score2 = lowScore;
       } else if (winner === player2) {
-        statsMap[player2].wins++;
-        statsMap[player1].losses++;
+        score1 = lowScore;
+        score2 = highScore;
+      }
+
+      statsMap[player1].pointsWon += score1;
+      statsMap[player2].pointsWon += score2;
+      statsMap[player1].pointsPlayed += totalPoints;
+      statsMap[player2].pointsPlayed += totalPoints;
+      statsMap[player1].matchesPlayed++;
+      statsMap[player2].matchesPlayed++;
+
+      if (winner === player1) {
+        statsMap[player1].matchesWon++;
+      } else {
+        statsMap[player2].matchesWon++;
       }
     });
 
-    // convert to winrate
+    // convert to point-based and match-based winrates
     Object.keys(statsMap).forEach((p) => {
-      const { wins, losses } = statsMap[p];
-      const total = wins + losses;
-      statsMap[p].winrate = total > 0 ? Math.round((wins / total) * 100) : 0;
+      const { pointsWon, pointsPlayed, matchesWon, matchesPlayed } = statsMap[p];
+      statsMap[p].pointWinrate =
+        pointsPlayed > 0 ? Math.round((pointsWon / pointsPlayed) * 100) : 0;
+      statsMap[p].matchWinrate =
+        matchesPlayed > 0 ? Math.round((matchesWon / matchesPlayed) * 100) : 0;
     });
 
     setStats(statsMap);
@@ -792,7 +843,10 @@ export default function App() {
                 </div>
                 <div className="text-xs sm:text-sm text-gray-100 mt-2">Rank: #{getRank(selected)}</div>
                 <div className="text-xs sm:text-sm text-gray-100">
-                  Winrate: {stats[selected.name]?.winrate || 0}%
+                  Match Winrate: {stats[selected.name]?.matchWinrate || 0}%
+                </div>
+                <div className="text-xs sm:text-sm text-gray-100">
+                  Point Winrate: {stats[selected.name]?.pointWinrate || 0}%
                 </div>
               </div>
             </div>
